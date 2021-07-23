@@ -6,9 +6,9 @@
  * Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License.  You may obtain a
  * copy of the License at the following location:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,9 +17,6 @@
  * under the License.
  */
 package org.apereo.inspektr.common.web;
-
-import javax.servlet.http.HttpServletRequest;
-import java.net.Inet4Address;
 
 /**
  * Captures information from the HttpServletRequest to log later.
@@ -39,54 +36,16 @@ public class ClientInfo {
     private final String geoLocation;
 
     private final String userAgent;
-    
+
     private ClientInfo() {
-        this(null);
+        this.serverIpAddress = this.clientIpAddress = this.geoLocation = this.userAgent = "unknown";
     }
 
-    public ClientInfo(final HttpServletRequest request) {
-        this(request, null, null, false);
-    }
-    
-    public ClientInfo(final HttpServletRequest request,
-                      final String alternateServerAddrHeaderName,
-                      final String alternateLocalAddrHeaderName,
-                      final boolean useServerHostAddress) {
-
-        try {
-            String serverIpAddress = request != null ? request.getLocalAddr() : null;
-            String clientIpAddress = request != null ? request.getRemoteAddr() : null;
-
-            if (request == null) {
-                this.geoLocation = "unknown";
-                this.userAgent = "unknown";
-            } else {
-                if (useServerHostAddress) {
-                    serverIpAddress = Inet4Address.getLocalHost().getHostAddress();
-                } else if (alternateServerAddrHeaderName != null && !alternateServerAddrHeaderName.isEmpty()) {
-                    serverIpAddress = request.getHeader(alternateServerAddrHeaderName) != null
-                            ? request.getHeader(alternateServerAddrHeaderName) : request.getLocalAddr();
-                }
-
-                if (alternateLocalAddrHeaderName != null && !alternateLocalAddrHeaderName.isEmpty()) {
-                    clientIpAddress = request.getHeader(alternateLocalAddrHeaderName) != null ? request.getHeader
-                            (alternateLocalAddrHeaderName) : request.getRemoteAddr();
-                }
-                String header = request.getHeader("user-agent");
-                this.userAgent = header == null ? "unknown" : header;
-                String geo = request.getParameter("geolocation");
-                if (geo == null) {
-                    geo = request.getHeader("geolocation");
-                }
-                this.geoLocation = geo == null ? "unknown" : geo;
-            }
-
-            this.serverIpAddress = serverIpAddress == null ? "unknown" : serverIpAddress;
-            this.clientIpAddress = clientIpAddress == null ? "unknown" : clientIpAddress;
-            
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+    public ClientInfo(String serverIpAddress, String clientIpAddress, String geoLocation, String userAgent) {
+        this.serverIpAddress = serverIpAddress;
+        this.clientIpAddress = clientIpAddress;
+        this.geoLocation = geoLocation;
+        this.userAgent = userAgent;
     }
 
     public String getServerIpAddress() {
